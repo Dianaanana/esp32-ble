@@ -5,9 +5,20 @@ const uint32_t SERIAL_SPEED{115200}; // baud rate for serial I/O
 
 BME680_Class BME680;      // new instance of class BME680
 
+#include "BluetoothSerial.h"
+
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
+BluetoothSerial SerialBT;
+
 
 void setup() {
   Serial.begin(SERIAL_SPEED);
+  SerialBT.begin("ESP32test");
+  Serial.println("The device started, now you can pair it with bluetooth!");
+  
   #ifdef __AVR_ATmega32U4__
     delay(3000);
   #endif
@@ -48,19 +59,18 @@ void loop() {
     sprintf(buf, "%4d %3d.%02d", (loopCounter - 1) % 9999,  // Clamp to 9999,
             (int8_t)(temp / 100), (uint8_t)(temp % 100));   // Temp in decidegrees
     finalbuf.concat(buf);
-//    Serial.print(buf);
     sprintf(buf, "%3d.%03d", (int8_t)(humidity / 1000),
             (uint16_t)(humidity % 1000));  // Humidity milli-pct
     finalbuf.concat(buf);
-//    Serial.print(buf);
     sprintf(buf, "%7d.%02d", (int16_t)(pressure / 100),
             (uint8_t)(pressure % 100));  // Pressure Pascals
     finalbuf.concat(buf);
-//    Serial.print(buf);
     sprintf(buf, "%4d.%02d\n", (int16_t)(gas / 100), (uint8_t)(gas % 100));  // Resistance milliohms
     finalbuf.concat(buf);
-//    Serial.print(buf);
     Serial.print(finalbuf);
+    if (Serial.available()) {
+      SerialBT.print(finalbuf);
+    }
     delay(10000);  // Wait 10s
   }                // of ignore first reading
 
