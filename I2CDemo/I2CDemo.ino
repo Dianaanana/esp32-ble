@@ -130,6 +130,11 @@ void loop() {
   @return   void
   */
   static int32_t  temp, humidity, pressure, gas;  // BME readings
+  static char     buf1[16];                        // sprintf text buffer
+  static char     buf2[16];                        // sprintf text buffer
+  static char     buf3[16];                        // sprintf text buffer
+  static char     buf4[16];                        // sprintf text buffer
+  static char     buf5[16];                        // sprintf text buffer
   static char     buf[16];                        // sprintf text buffer
   static float    alt;                            // Temporary variable
   static uint16_t loopCounter = 0;                // Display iterations
@@ -139,19 +144,20 @@ void loop() {
   }                                                     // if-then time to show headers
   BME680.getSensorData(temp, humidity, pressure, gas);  // Get readings
   if (loopCounter++ != 0) {                             // Ignore first reading, might be incorrect
-    sprintf(buf, "%4d %3d.%02d", (loopCounter - 1) % 9999,  // Clamp to 9999,
+    sprintf(buf1, "%4d %3d.%02d", (loopCounter - 1) % 9999,  // Clamp to 9999,
             (int8_t)(temp / 100), (uint8_t)(temp % 100));   // Temp in decidegrees
-    Serial.print(buf);
-    sprintf(buf, "%3d.%03d", (int8_t)(humidity / 1000),
+//    Serial.print(buf);
+    sprintf(buf2, "%3d.%03d", (int8_t)(humidity / 1000),
             (uint16_t)(humidity % 1000));  // Humidity milli-pct
-    Serial.print(buf);
-    sprintf(buf, "%7d.%02d", (int16_t)(pressure / 100),
+//    Serial.print(buf);
+    sprintf(buf3, "%7d.%02d", (int16_t)(pressure / 100),
             (uint8_t)(pressure % 100));  // Pressure Pascals
-    Serial.print(buf);
+//    Serial.print(buf);
     alt = altitude(pressure);                                                // temp altitude
-    sprintf(buf, "%5d.%02d", (int16_t)(alt), ((uint8_t)(alt * 100) % 100));  // Altitude meters
-    Serial.print(buf);
-    sprintf(buf, "%4d.%02d\n", (int16_t)(gas / 100), (uint8_t)(gas % 100));  // Resistance milliohms
+    sprintf(buf4, "%5d.%02d", (int16_t)(alt), ((uint8_t)(alt * 100) % 100));  // Altitude meters
+//    Serial.print(buf);
+    sprintf(buf5, "%4d.%02d\n", (int16_t)(gas / 100), (uint8_t)(gas % 100));  // Resistance milliohms
+    buf = buf1 + buf2 + buf3 + buf4 + buf5;
     Serial.print(buf);
     delay(10000);  // Wait 10s
   }                // of ignore first reading

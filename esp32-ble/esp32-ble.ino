@@ -36,6 +36,7 @@ void loop() {
   
   static int32_t  temp, humidity, pressure, gas;  // BME readings
   static char     buf[16];                        // sprintf text buffer
+  String     finalbuf;
   static float    alt;                            // Temporary variable
   static uint16_t loopCounter = 0;                // Display iterations
   if (loopCounter % 25 == 0) {                    // Show header @25 loops
@@ -46,15 +47,20 @@ void loop() {
   if (loopCounter++ != 0) {                             // Ignore first reading, might be incorrect
     sprintf(buf, "%4d %3d.%02d", (loopCounter - 1) % 9999,  // Clamp to 9999,
             (int8_t)(temp / 100), (uint8_t)(temp % 100));   // Temp in decidegrees
-    Serial.print(buf);
+    finalbuf.concat(buf);
+//    Serial.print(buf);
     sprintf(buf, "%3d.%03d", (int8_t)(humidity / 1000),
             (uint16_t)(humidity % 1000));  // Humidity milli-pct
-    Serial.print(buf);
+    finalbuf.concat(buf);
+//    Serial.print(buf);
     sprintf(buf, "%7d.%02d", (int16_t)(pressure / 100),
             (uint8_t)(pressure % 100));  // Pressure Pascals
-    Serial.print(buf);
+    finalbuf.concat(buf);
+//    Serial.print(buf);
     sprintf(buf, "%4d.%02d\n", (int16_t)(gas / 100), (uint8_t)(gas % 100));  // Resistance milliohms
-    Serial.print(buf);
+    finalbuf.concat(buf);
+//    Serial.print(buf);
+    Serial.print(finalbuf);
     delay(10000);  // Wait 10s
   }                // of ignore first reading
 
